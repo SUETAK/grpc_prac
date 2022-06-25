@@ -8,8 +8,21 @@ service GreetingService {
   rpc Hello(HelloRequest) returns (HelloResponse);
 }
 
+service VoteService {
+  rpc Voting(VoteRequest) returns (VoteResponse);
+}
+
+message VoteRequest {
+  string who = 1;
+}
+
+message VoteResponse {
+  string winner = 1;
+}
+
 message HelloRequest {
   string name = 1;
+  int32 old = 2;
 }
 
 message HelloResponse {
