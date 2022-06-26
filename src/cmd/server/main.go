@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	myapp "prac-grpc/pkg/grpc"
+	"time"
 )
 
 func main() {
@@ -56,4 +57,21 @@ func (s myServer) Hello(ctx context.Context, req *myapp.HelloRequest) (*myapp.He
 	return &myapp.HelloResponse{
 		Message: fmt.Sprintf("Hello, %s!", req.GetName()),
 	}, nil
+}
+
+// HelloServerStream myapp_grpc.pb.go に定義されたシグネチャ
+// HelloServerStream (*HelloRequest, GreetingService_HelloServerStreamServer) error
+func (s *myServer) HelloServerStream(req *myapp.HelloRequest, stream myapp.GreetingService_HelloServerStreamServer) error {
+	resCount := 5
+	for i := 0; i < resCount; i++ {
+		// stream のSendメソッドを使っている
+		if err := stream.Send(&myapp.HelloResponse{
+			Message: fmt.Sprintf("[%d] Hello, %s!", i, req.GetName()),
+		}); err != nil {
+			return err
+		}
+		time.Sleep(time.Second * 1)
+	}
+	// nil を返却することでストリームを終了させる
+	return nil
 }
